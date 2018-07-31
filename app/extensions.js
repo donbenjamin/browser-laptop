@@ -13,6 +13,7 @@ const appStore = require('../js/stores/appStore')
 const extensionState = require('./common/state/extensionState')
 const appActions = require('../js/actions/appActions')
 const fs = require('fs')
+const fsExtra = require('fs-extra')
 const path = require('path')
 const l10n = require('../js/l10n')
 const {bravifyText} = require('./renderer/lib/extensionsUtil')
@@ -628,12 +629,7 @@ module.exports.init = () => {
       )
     }
 
-    if (!fs.existsSync(gethDataDir)) {
-      fs.mkdirSync(gethDataDir)
-    }
-    if (!fs.existsSync(path.join(gethDataDir, 'geth'))) {
-      fs.mkdirSync(path.join(gethDataDir, 'geth'))
-    }
+    fsExtra.ensureDirSync(path.join(gethDataDir, 'geth'))
     fs.writeFileSync(path.join(gethDataDir, 'geth', 'static-nodes.json'), JSON.stringify(staticNodes))
 
     const spawnOptions = {
