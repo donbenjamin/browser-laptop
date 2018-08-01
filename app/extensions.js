@@ -610,7 +610,8 @@ module.exports.init = () => {
     const gethDataDir = path.join(app.getPath('userData'), envNet || 'ethereum')
 
     const gethArgs = [
-      '--light',
+      '--syncmode',
+      'light',
       '--rpc',
       '--ws',
       '--wsorigins',
@@ -644,7 +645,7 @@ module.exports.init = () => {
         const response = JSON.parse(data)
         if (response.id === 1) {
           const existingNodes = response.result
-          const discoveryDomain = '_enode._tcp.ropsten.ethwallet.bravesoftware.com' // XXX should be set to something else on mainnet
+          const discoveryDomain = `_enode._tcp.${envNet || 'mainnet'}.ethwallet.bravesoftware.com`
 
           ;(async function () {
             const newNodes = await dns.resolveSrv(discoveryDomain)
