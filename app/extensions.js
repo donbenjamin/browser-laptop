@@ -596,18 +596,18 @@ module.exports.init = () => {
 
   if (getSetting(settings.ETHWALLET_ENABLED)) {
     const envNet = process.env.ETHEREUM_NETWORK
+    const gethDataDir = path.join(app.getPath('userData'), envNet || 'ethereum')
+
     const gethProcessKey = process.platform === 'win32'
       ? 'geth.exe'
       : 'geth'
     const ipcPath = process.platform === 'win32'
       ? '\\\\.\\pipe\\geth.ipc'
-      : path.join(app.getPath('userData'), 'ethereum', 'geth.ipc')
+      : path.join(gethDataDir, 'geth.ipc')
     const pidPath = process.platform === 'win32'
       ? '\\\\.\\pipe\\geth.pid'
-      : path.join(app.getPath('userData'), 'ethereum', 'geth.pid')
+      : path.join(gethDataDir, 'geth.pid')
     const gethProcessPath = path.join(getExtensionsPath('bin'), gethProcessKey)
-
-    const gethDataDir = path.join(app.getPath('userData'), envNet || 'ethereum')
 
     const gethArgs = [
       '--syncmode',
@@ -681,6 +681,11 @@ module.exports.init = () => {
     }
 
     const spawnGeth = () => {
+      // Ensure geth dir is available
+      if (!fs.existsSync(gethDataDir)) {
+        fs.mkdirSync(gethDataDir)
+      }
+
       // If the process from the previous browswer session still lingers, it should be killed
       if (fs.existsSync(pidPath)) {
         try {
